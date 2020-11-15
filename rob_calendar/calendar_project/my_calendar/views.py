@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.views.generic.list import ListView
 from django.urls import reverse_lazy
@@ -29,6 +30,7 @@ def next_month(date_data):
     return str(nm.year) + '-' + str(nm.month)
 
 
+@login_required(login_url='login')
 def home(request):
     return render(request,'my_calendar/home.html')
 

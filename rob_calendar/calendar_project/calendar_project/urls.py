@@ -15,9 +15,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
+from accounts.api import views as accounts_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('registration/',accounts_views.registration,name="registration"),
     path('',include('my_calendar.urls')),
     path('',include('accounts.urls')),
+
+    # REST Framework URLs
+    path('',include('accounts.api.urls')),
 ]
