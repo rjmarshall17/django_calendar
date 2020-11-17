@@ -2,14 +2,44 @@ from django import forms
 from django.forms import ModelForm
 from django.core.exceptions import ValidationError
 from django.contrib.auth import password_validation
+from django.contrib.auth.hashers import make_password
 
 from .models import Account
 
 
 class AccountForm(ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput())
+    password_confirm = forms.CharField(widget=forms.PasswordInput())
+
     class Meta:
         model = Account
-        fields = ('first_name', 'last_name', 'email', 'password')
+        fields = ('first_name', 'last_name', 'email', 'password', 'password_confirm')
+
+    def save(self):
+        print("\n************ RJM: In the account form save function\n")
+        print("\n************\n%s\n***********\n" % (self.cleaned_data))
+        account = Account(
+            email=self.cleaned_data.get('email'),
+            first_name=self.cleaned_data.get('first_name'),
+            last_name=self.cleaned_data.get('last_name'),
+        )
+        password = self.cleaned_data.get('password')
+        account.set_password(make_password(password))
+        account.save()
+        return account
+
+    def clean_password(self):
+        print('\n**************\n%s\n%s\n**************' % (dir(self),self.cleaned_data))
+        password = self.cleaned_data['password']
+        password_confirmation = self.data.get('password_confirm')
+
+        try:
+            password_validation.validate_password(self.cleaned_data['password'])
+        except ValidationError as err:
+            raise forms.ValidationError(err.messages[0])
+        if password != password_confirmation:
+            raise forms.ValidationError({'password':'Passwords do not match'})
+        return password
 
     # error_messages = {
     #     'password_mismatch': 'The two password fields did not match.',

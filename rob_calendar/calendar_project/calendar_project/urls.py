@@ -20,7 +20,7 @@ from accounts.api import views as accounts_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('registration/',accounts_views.registration,name="registration"),
-    path('',include('my_calendar.urls')),
+    path('calendar/',include('my_calendar.urls')),
     path('',include('accounts.urls')),
 
     # REST Framework URLs

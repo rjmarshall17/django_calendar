@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.forms import AuthenticationForm
 
 from rest_framework import status
 from rest_framework.response import Response
@@ -20,6 +21,12 @@ class AccountViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.AccountSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+
+@api_view(['POST'],)
+@permission_classes([AllowAny])
+def login_account(request):
+    form = AuthenticationForm()
+    return render(request,"accounts/login.html",{'form':form})
 
 @api_view(['GET', ])
 def api_detail_account_view(request):
@@ -69,7 +76,7 @@ def api_delete_account_view(request):
 def registration(request):
     if request.method == 'POST':
         print(request.POST)
-        form = AccountForm(request.POST)
+        form = AccountForm(request.POST or None)
         render(request, 'accounts/registration.html', {'form': form})
         print("\n******** RJM: form.errors=>%s<" % form.errors)
         if form.is_valid():
